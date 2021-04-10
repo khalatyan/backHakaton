@@ -2,7 +2,7 @@ from django.contrib import admin
 
 from reversion.admin import VersionAdmin
 
-from core.models import BenefitsType, InformationDocuments, RequiredDocuments, Benefit, Requirement, RequirementsValue, BenefitRequrements
+from core.models import BenefitsType, InformationDocuments, RequiredDocuments, Benefit, Requirement, RequirementsValue, BenefitRequrements, BenefitsGroup, Periodicity
 
 
 @admin.register(BenefitsType)
@@ -36,3 +36,12 @@ class RequirementsValueAdmin(VersionAdmin):
 @admin.register(BenefitRequrements)
 class BenefitRequrementsAdmin(VersionAdmin):
     list_display = ['id', 'requirement_value', "benefit", "sign"]
+
+@admin.register(Periodicity)
+class PeriodicityAdmin(VersionAdmin):
+    list_display = ['id', "title"]
+
+
+@admin.register(BenefitsGroup)
+class BenefitsGroupAdmin(VersionAdmin):
+    list_display = ['id', "title"]

@@ -4,7 +4,7 @@ from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
-from .models import BenefitsType, InformationDocuments, RequiredDocuments, Benefit, Requirement, RequirementsValue, BenefitRequrements
+from .models import BenefitsType, InformationDocuments, RequiredDocuments, Benefit, Requirement, RequirementsValue, BenefitRequrements, BenefitsGroup
 
 @csrf_exempt
 def getBenefitList(request):
@@ -18,18 +18,18 @@ def getBenefitList(request):
         )
 
 
-    benefit_types = BenefitsType.objects.all()
+    benefit_groups = BenefitsGroup.objects.all()
 
     json_data = {"data": []}
 
     index = 0
 
-    for benefit_type in benefit_types:
-        benefits = Benefit.objects.filter(group=benefit_type)
+    for benefit_group in benefit_groups:
+        benefits = Benefit.objects.filter(group=benefit_group)
 
         if (len(json_data["data"]) <= index):
             json_data["data"].append({
-                "name": benefit_type.title,
+                "name": benefit_group.title,
                 "type": "section",
                 "child": []
             })
@@ -39,7 +39,7 @@ def getBenefitList(request):
         for benefit in benefits:
             json_data["data"][index]["child"].append({
                 "name": benefit.title,
-                "type": "item",
+                "type": benefit.type.title,
                 "value": benefit.value,
                 "detail_url": "http://127.0.0.1:8000/get-benefit-list/" + str(benefit.id),
             })
@@ -64,7 +64,7 @@ def getBenefitById(request, id):
     benefit = Benefit.objects.get(id=id)
 
     docs = []
-    for doument in benefit.information_documents.all():
+    for document in benefit.information_documents.all():
         docs.append({
             "name": document.title,
             "url": document.link,
@@ -75,9 +75,9 @@ def getBenefitById(request, id):
         "data": {
             "name": benefit.title,
             "description": benefit.description,
-            "periodicity": benefit.periodicity,
+            "periodicity": benefit.periodicity.title,
             "value": benefit.value,
-            "type": benefit.type,
+            "type": benefit.type.title,
             "start_date": benefit.start_date,
             "end_date": benefit.end_date,
             "docs": docs
