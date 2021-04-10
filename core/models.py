@@ -86,8 +86,8 @@ class Benefit(models.Model):
     description = models.TextField(verbose_name=u'Описание', blank=True, null=True)
     periodicity = models.IntegerField(verbose_name=u'Периодичность', default=3, choices=PERIODICITY)
     group = models.ForeignKey(BenefitsType, verbose_name=u'Группа льготы', on_delete=models.CASCADE, null=False, blank=False)
-    information_documents = models.ManyToManyField(InformationDocuments, null=True, blank=True)
-    required_documents = models.ManyToManyField(RequiredDocuments, null=True)
+    information_documents = models.ManyToManyField(InformationDocuments, blank=True)
+    required_documents = models.ManyToManyField(RequiredDocuments, blank=True)
 
 
 
