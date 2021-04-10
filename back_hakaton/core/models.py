@@ -68,7 +68,7 @@ class RequiredDocuments(models.Model):
         return str(self.title)
 
     class Meta:
-        
+
         verbose_name = u'Требуемый документ'
         verbose_name_plural = u'Требуемые документы'
 
@@ -83,11 +83,11 @@ class Benefit(models.Model):
     value = models.CharField(max_length=512, verbose_name=u'Значение', blank=True)
     start_date = models.DateField(verbose_name=u'Дата начала действия льготы', auto_now_add=True)
     end_date = models.DateField(verbose_name=u'Дата окончания действия льготы', auto_now_add=True)
-    description = models.TextField(verbose_name=u'Описание', blank=True)
+    description = models.TextField(verbose_name=u'Описание', blank=True, null=True)
     periodicity = models.IntegerField(verbose_name=u'Периодичность', default=3, choices=PERIODICITY)
-    group = models.ForeignKey(BenefitsType, verbose_name=u'Тип льготы', on_delete=models.CASCADE, null=False, blank=False)
-    information_documents = models.ManyToManyField(InformationDocuments)
-    required_documents = models.ManyToManyField(RequiredDocuments)
+    group = models.ForeignKey(BenefitsType, verbose_name=u'Группа льготы', on_delete=models.CASCADE, null=False, blank=False)
+    information_documents = models.ManyToManyField(InformationDocuments, null=True, blank=True)
+    required_documents = models.ManyToManyField(RequiredDocuments, null=True)
 
 
 
@@ -96,8 +96,8 @@ class Benefit(models.Model):
 
     class Meta:
 
-        verbose_name = u'Требование'
-        verbose_name_plural = u'требования'\
+        verbose_name = u'Льгота'
+        verbose_name_plural = u'Льготы'
 
 
 
