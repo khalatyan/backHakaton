@@ -1,27 +1,51 @@
 from django.db import models
 
-BENEFIT_TYPE = (
-    (1, u'Скидка'),
-    (2, u'Деньги'),
-    (3, u'Другое'),
-)
-
-PERIODICITY = (
-    (1, u'Раз в месяц'),
-    (2, u'Раз в год'),
-    (3, u'Единовремено'),
-)
-
 SIGN = (
     (1, u'Больше'),
     (2, u'Меньше'),
     (3, u'Равно'),
 )
 
+
+class Periodicity(models.Model):
+
+    """
+    Периодичность льгот
+    """
+
+    title = models.CharField(max_length=512, verbose_name=u'Заголовок')
+
+    def __str__(self):
+        return '%s' % (self.title)
+
+    class Meta:
+
+        verbose_name = u'Периодичность Льгот'
+        verbose_name_plural = u'Периодичности Льгот'
+
+
+
 class BenefitsType(models.Model):
 
     """
-    Тип льгот
+    Общий список всех льгот
+    """
+
+    title = models.CharField(max_length=512, verbose_name=u'Заголовок')
+
+    def __str__(self):
+        return '%s' % (self.title)
+
+    class Meta:
+
+        verbose_name = u'Тип Льгот'
+        verbose_name_plural = u'Типы Льгот'
+
+
+class BenefitsGroup(models.Model):
+
+    """
+    Группа льгот
     """
 
     title = models.CharField(max_length=512, verbose_name=u'Заголовок')
@@ -31,8 +55,8 @@ class BenefitsType(models.Model):
 
     class Meta:
 
-        verbose_name = u'Тип льгот'
-        verbose_name_plural = u'Типы льгот'
+        verbose_name = u'Группа льгот'
+        verbose_name_plural = u'Группы льгот'
 
 
 class InformationDocuments(models.Model):
@@ -79,13 +103,13 @@ class Benefit(models.Model):
     """
 
     title = models.CharField(max_length=512, verbose_name=u'Заголовок')
-    type = models.IntegerField(verbose_name=u'Тип льготы', default=3, choices=BENEFIT_TYPE)
+    type = models.ForeignKey(BenefitsType, verbose_name=u'Тип льготы', on_delete=models.CASCADE, null=False, blank=False)
     value = models.CharField(max_length=512, verbose_name=u'Значение', blank=True)
     start_date = models.DateField(verbose_name=u'Дата начала действия льготы', auto_now_add=True)
     end_date = models.DateField(verbose_name=u'Дата окончания действия льготы', auto_now_add=True)
     description = models.TextField(verbose_name=u'Описание', blank=True, null=True)
-    periodicity = models.IntegerField(verbose_name=u'Периодичность', default=3, choices=PERIODICITY)
-    group = models.ForeignKey(BenefitsType, verbose_name=u'Группа льготы', on_delete=models.CASCADE, null=False, blank=False)
+    periodicity = models.ForeignKey(Periodicity, verbose_name=u'Периодичность льготы', on_delete=models.CASCADE, null=False, blank=False)
+    group = models.ForeignKey(BenefitsGroup, verbose_name=u'Группа льготы', on_delete=models.CASCADE, null=False, blank=False)
     information_documents = models.ManyToManyField(InformationDocuments, blank=True)
     required_documents = models.ManyToManyField(RequiredDocuments, blank=True)
 

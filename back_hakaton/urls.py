@@ -16,6 +16,10 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
+from core.views import getBenefitList, getBenefitById
+
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('get-benefit-list/', getBenefitList),
+    path('get-benefit-list/<str:id>', getBenefitById)
 ]
