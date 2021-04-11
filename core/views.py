@@ -86,3 +86,67 @@ def getBenefitById(request, id):
 
 
     return JsonResponse(json_data, safe=False, json_dumps_params={'ensure_ascii': False})
+
+
+
+@csrf_exempt
+def getAnswer(request):
+
+    if (request.method != "POST"):
+        return JsonResponse (
+            {
+                'status': False,
+                'comment': 'Неподдерживаемый метод запроса'
+            }
+        )
+
+    request_body = json.loads( request.body.decode( 'utf-8' ) )["data"]
+
+    json_data = {"data": []}
+
+    benefits = Benefit.objects.all()
+
+    for benefit in benefits:
+
+        benefit_requirements = BenefitRequrements.objects.filter(benefit=benefit)
+
+        status = 1
+
+        for benefit_requirement in benefit_requirements:
+            print(benefit_requirement)
+            if not (benefit_requirement.requirement_value.requirement.title in request_body):
+                status = 2
+                break
+
+            if (benefit_requirement.sign == 3):
+                if not (request_body[benefit_requirement.requirement_value.requirement.title] == benefit_requirement.requirement_value.value):
+                    status = 3
+                    break
+            elif(benefit_requirement.sign == 2):
+                if not (request_body[benefit_requirement.requirement_value.requirement.title] <= benefit_requirement.requirement_value.value):
+                    status = 3
+                    break
+            else:
+                if not (request_body[benefit_requirement.requirement_value.requirement.title] >= benefit_requirement.requirement_value.value):
+                    status = 3
+                    break
+
+
+        if (status == 1):
+            data = {
+                "name": benefit.title,
+                "status": True,
+                "detail_url": "http://127.0.0.1:8000/get-benefit-list/" + str(benefit.id),
+            }
+
+            json_data["data"].append(data)
+        elif (status == 2):
+            data = {
+                "name": benefit.title,
+                "status": "Недостаточно данных",
+                "detail_url": "http://127.0.0.1:8000/get-benefit-list/" + str(benefit.id),
+            }
+            json_data["data"].append(data)
+
+
+    return JsonResponse(json_data, safe=False, json_dumps_params={'ensure_ascii': False})
